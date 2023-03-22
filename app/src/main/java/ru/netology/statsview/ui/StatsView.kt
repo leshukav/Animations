@@ -1,8 +1,5 @@
 package ru.netology.statsview.ui
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
@@ -11,17 +8,12 @@ import android.graphics.PointF
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
-import android.view.View.ROTATION
-import android.view.ViewGroup
 import android.view.animation.*
-import android.widget.TextView
 import androidx.core.content.withStyledAttributes
-import androidx.core.graphics.rotationMatrix
 import ru.netology.statsview.R
 import ru.netology.statsview.utils.AndroidUtils
 import kotlin.math.min
 import kotlin.random.Random
-import ru.netology.statsview.MainActivity as MainActivity1
 
 class StatsView @JvmOverloads constructor(
     context: Context,
@@ -99,7 +91,7 @@ class StatsView @JvmOverloads constructor(
         if (data.isEmpty()) {
             return
         }
-        var startAngle = -45F
+        var startAngle = -90F
         var angle: Float = 0F
 
         val sum = data.sum()
@@ -108,9 +100,8 @@ class StatsView @JvmOverloads constructor(
         parts.forEachIndexed { index, datum ->
             angle = datum * 360F
             paint.color = colors.getOrElse(index) { randomColor() }
-            myDrawArc(canvas, startAngle, angle * progress, paint)
-            myDrawArc(canvas, startAngle - progress * 100F + 4F, angle * progress, paint)
-            if (progress == 0.5F) {
+            myDrawArc(canvas, startAngle + progress * 360, angle * progress, paint)
+            if (progress == 1F) {
                 paint.color = colors.first()
                 myDrawArc(canvas, -90F, 1F, paint)
             }
@@ -118,7 +109,7 @@ class StatsView @JvmOverloads constructor(
 
             canvas.drawText(
                 "%.2f%%".format(
-                    parts.sum() * progress * 100 * 2
+                    parts.sum() * progress * 100
                 ),
                 centr.x,
                 (centr.y + textPaint.textSize / 4),
@@ -134,7 +125,7 @@ class StatsView @JvmOverloads constructor(
         }
         progress = 0F
 
-        valueAnimator = ValueAnimator.ofFloat(0F, 0.5F).apply {
+        valueAnimator = ValueAnimator.ofFloat(0F, 1F).apply {
             addUpdateListener { anim ->
                 progress = anim.animatedValue as Float
                 invalidate()
